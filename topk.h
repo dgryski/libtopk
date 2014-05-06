@@ -1,4 +1,7 @@
 /*  sketch element */
+
+#include <stddef.h>
+
 typedef struct {
     int alpha;
     int c;
