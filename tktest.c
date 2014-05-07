@@ -26,7 +26,7 @@ int main(int argc, char *argv[]) {
     }
 
     for(int i=0;i<tk->msize;i++) {
-        printf("%s: %d\n", tk->mlist[i].v, tk->mlist[i].count);
+        printf("%s %d\n", tk->mlist[i].v, tk->mlist[i].count);
     }
 
 //    printf("cache_hits=%d total_lookups=%d success=%f\n", tk->cache_hits, tk->total_lookups, (double)(tk->cache_hits)/(double)(tk->total_lookups));
