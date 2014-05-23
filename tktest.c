@@ -22,7 +22,7 @@ int main(int argc, char *argv[]) {
     while(fgets((char *)line, MAXLINELEN, f)) {
         size_t len = strlen((char *)line);
         line[len-1] = '\0';
-        topk_insert(tk, line, len);
+        topk_insert(tk, line, len, 1);
     }
 
     for(int i=0;i<tk->msize;i++) {

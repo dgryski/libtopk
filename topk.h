@@ -29,4 +29,4 @@ typedef struct {
 
 topk_t *topk_new(int size);
 void topk_free(topk_t * tk);
-void topk_insert(topk_t * tk, unsigned char *v, size_t vlen);
+void topk_insert(topk_t * tk, unsigned char *v, size_t vlen, int count);

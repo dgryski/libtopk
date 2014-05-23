@@ -41,7 +41,7 @@ void topk_free(topk_t * tk)
 }
 
 
-void topk_insert(topk_t * tk, unsigned char *v, size_t vlen)
+void topk_insert(topk_t * tk, unsigned char *v, size_t vlen, int count)
 {
 
     uint32_t h = leveldb_bloom_hash(v, vlen) % tk->hsize;
@@ -52,7 +52,7 @@ void topk_insert(topk_t * tk, unsigned char *v, size_t vlen)
 	int i = tk->htable[h].idx;
 	if (tk->mlist[i].vlen == vlen
 	    && memcmp(v, tk->mlist[i].v, vlen) == 0) {
-	    tk->mlist[i].count++;
+	    tk->mlist[i].count += count;
 	    bubble_sort(tk->mlist, i);
 	    return;
 	}
@@ -60,7 +60,7 @@ void topk_insert(topk_t * tk, unsigned char *v, size_t vlen)
 	for (i = 0; i < tk->msize; i++) {
 	    if (tk->mlist[i].vlen == vlen
 		&& memcmp(v, tk->mlist[i].v, vlen) == 0) {
-		tk->mlist[i].count++;
+		tk->mlist[i].count += count;
 		tk->htable[h].idx = i;
 		bubble_sort(tk->mlist, i);
 		return;
@@ -78,7 +78,7 @@ void topk_insert(topk_t * tk, unsigned char *v, size_t vlen)
 	memcpy(l->v, v, vlen);
 	l->vlen = vlen;
 
-	l->count = 1;
+	l->count = count;
 	l->err = 0;
 
 	bubble_sort(tk->mlist, tk->msize);
@@ -92,9 +92,9 @@ void topk_insert(topk_t * tk, unsigned char *v, size_t vlen)
     // the 'minimum' currently tracked item is the last one, we keep the list sorted
     lelt_t *u = tk->mlist + tk->msize - 1;
 
-    if (tk->htable[h].alpha + 1 < u->count) {
+    if (tk->htable[h].alpha + count < u->count) {
 	// don't track it -- not popular enough
-	tk->htable[h].alpha++;
+	tk->htable[h].alpha += count;
 	return;
     }
     // no space to add it, but let's replace the item in 'u'
@@ -109,7 +109,7 @@ void topk_insert(topk_t * tk, unsigned char *v, size_t vlen)
     u->vlen = vlen;
 
     u->err = tk->htable[h].alpha;
-    u->count = tk->htable[h].alpha + 1;
+    u->count = tk->htable[h].alpha + count;
 
     bubble_sort(tk->mlist, tk->msize - 1);
 
